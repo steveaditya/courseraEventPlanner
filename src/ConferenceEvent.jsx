@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import "./ConferenceEvent.css";
-import { incrementAvQuantity, decrementAvQuantity } from "./avSlice";
 import TotalCost from "./TotalCost";
 import { toggleMealSelection } from "./mealsSlice";
+import { incrementAvQuantity, decrementAvQuantity } from "./avSlice";
 import { useSelector, useDispatch } from "react-redux";
 import { incrementQuantity, decrementQuantity } from "./venueSlice";
 const ConferenceEvent = () => {
@@ -10,10 +10,9 @@ const ConferenceEvent = () => {
     const [numberOfPeople, setNumberOfPeople] = useState(1);
     const venueItems = useSelector((state) => state.venue);
     const avItems = useSelector((state) => state.av);
+    const mealsItems = useSelector((state) => state.meals);
     const dispatch = useDispatch();
     const remainingAuditoriumQuantity = 3 - venueItems.find(item => item.name === "Auditorium Hall (Capacity:200)").quantity;
-    const mealsItems = useSelector((state) => state.meals);
-    const mealsTotalCost = calculateTotalCost("meals");
 
 
     const handleToggleItems = () => {
@@ -138,6 +137,7 @@ const ConferenceEvent = () => {
     };
     const venueTotalCost = calculateTotalCost("venue");
     const avTotalCost = calculateTotalCost("av");
+    const mealsTotalCost = calculateTotalCost("meals");
     const navigateToProducts = (idType) => {
         if (idType == '#venue' || idType == '#addons' || idType == '#meals') {
             if (showItems) { // Check if showItems is false
@@ -150,6 +150,7 @@ const ConferenceEvent = () => {
         av: avTotalCost,
         meals: mealsTotalCost,
     };
+
     return (
         <>
             <navbar className="navbar_event_conference">
@@ -257,7 +258,6 @@ const ConferenceEvent = () => {
                                     ))}
                                 </div>
                                 <div className="total_cost">Total Cost: {avTotalCost}</div>
-
                             </div>
 
                             {/* Meal Section */}
@@ -270,11 +270,13 @@ const ConferenceEvent = () => {
                                 </div>
 
                                 <div className="input-container venue_selection">
-                                    <label htmlFor="numberOfPeople"><h3>Number of People:</h3></label>
-                                    <input type="number" className="input_box5" id="numberOfPeople" value={numberOfPeople}
-                                        onChange={(e) => setNumberOfPeople(parseInt(e.target.value))}
-                                        min="1"
-                                    />
+                                    <div className="input-container venue_selection">
+                                        <label htmlFor="numberOfPeople"><h3>Number of People:</h3></label>
+                                        <input type="number" className="input_box5" id="numberOfPeople" value={numberOfPeople}
+                                            onChange={(e) => setNumberOfPeople(parseInt(e.target.value))}
+                                            min="1"
+                                        />
+                                    </div>
                                 </div>
                                 <div className="meal_selection">
                                     {mealsItems.map((item, index) => (
@@ -292,12 +294,11 @@ const ConferenceEvent = () => {
                                 </div>
                                 <div className="total_cost">Total Cost: {mealsTotalCost}</div>
 
-
                             </div>
                         </div>
                     ) : (
                         <div className="total_amount_detail">
-                            <TotalCost totalCosts={totalCosts} handleClick={handleToggleItems} ItemsDisplay={() => <ItemsDisplay items={items} />} />
+                            <TotalCost totalCosts={totalCosts} ItemsDisplay={() => <ItemsDisplay items={items} />} />
                         </div>
                     )
                 }
